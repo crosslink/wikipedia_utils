@@ -19,7 +19,7 @@ WHILE i<n DO
   SET pageId = (SELECT page_id from page LIMIT i,1);
   SET revCount = (select count(*) from revision where rev_id = (select page_latest from page where page_id=pageID));
   IF (revCount = 0) THEN
-  	SELECT cast(i as char), cast(pageId as char)' contains not valid revision id';
+  	SELECT cast(i as char), cast(pageId as char)' contains no valid revision id';
   	SET revCount = (select count(*) from revision where rev_page=pageId);
   	IF (revCount > 0) THEN
   	  SET pageLatest = (SELECT page_latest from page where page_id=pageId);
@@ -27,6 +27,7 @@ WHILE i<n DO
   	    SELECT cast(pageId as char)' updating latest revision id of page';
         SET revId = (select rev_id from revision where rev_page=pageId and rev_parent_id=pageLatest order by rev_id desc limit 1);
         UPDATE page SET page_latest=revId where page_id=pageId;
+        COMMIT;
 	  END IF;
 	END IF;
   END IF;
